@@ -1,3 +1,5 @@
 nbproject/
-css/*
-!css/.exists
+public/css/*
+!public/css/.exists
+public/js/dijit/
+public/js/dojo

@@ -1,0 +1,53 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+<html>
+	<head>
+		<title>Testing doped/request/Iframe</title>
+		<style type="text/css">
+			@import "../../../dojo/resources/dojo.css";
+		</style>
+		<script>
+			var dojoConfig = {
+				async: true
+			};
+		</script>
+		<script type="text/javascript" src="../../../dojo/dojo.js"></script>
+		<script type="text/javascript">
+			require(["doh", "dojo/query", "doped/request/Iframe", "dojo/domReady!"], function(doh, query, Iframe){
+				doh.register("doped/request/Iframe", [
+                                    {
+                                        name: 'Iframe can set the parent window value',
+                                        runTest: function(t) {
+                                            window.iframeTestBoolean = false;
+                                            window.iframeTestCallback = function() {
+                                                t.assertTrue(window.iframeTestBoolean);
+                                            }
+                                            var iframe = Iframe(
+                                                window.location.href.replace('Iframe.html', '') + 'iframeTestData.html?q=' + Date.now()
+                                            );
+                                        }
+                                    },
+                                    
+                                    {
+                                        name: 'Iframe can be destroyed',
+                                        runTest: function(t) {
+                                            var iframe = Iframe(
+                                                window.location.href.replace('Iframe.html', '') + 'blank.html'
+                                            );
+                                    
+                                            var iframeId = iframe._node.id;
+                                    
+                                            iframe.destroy();
+                                            t.assertEqual(0, query('iframe#' + iframeId).length);
+                                        }
+                                    }
+				]);
+				doh.run();
+			});
+
+		</script>
+	</head>
+	<body>
+            <div>doped/request/Iframe</div>
+	</body>
+</html>

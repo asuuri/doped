@@ -24,7 +24,7 @@ for($i = 0; $i < 5; $i++): ?>
 
 
 <?php
-    sleep(0.2);
+    sleep(0.1);
     ob_flush();
     flush();
 endfor; ?>

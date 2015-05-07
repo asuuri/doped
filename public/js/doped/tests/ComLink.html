@@ -23,7 +23,7 @@
                     {
                         name: 'Uri parcer works with query string',
                         runTest: function(t) {
-                            var baseUrl = window.location.href.replace('ComLink.html', '') + 'request/blank.html';
+                            var baseUrl = window.location.href.replace('ComLink.html', '') + '_testEndpoints/blank.html';
                             var comLink = new ComLink(
                                 baseUrl + '?query=true&bar=foo&gruu=1'
                             );
@@ -35,7 +35,7 @@
                     {
                         name: 'Uri parcer works without query string',
                         runTest: function(t) {
-                            var baseUrl = window.location.href.replace('ComLink.html', '') + 'request/blank.html';
+                            var baseUrl = window.location.href.replace('ComLink.html', '') + '_testEndpoints/blank.html';
                             var comLink = new ComLink(baseUrl);
 
                             t.assertEqual({}, comLink._uri.query);
@@ -45,7 +45,7 @@
                     {
                         name: 'Duplicate connection id are not allowed',
                         runTest: function(t) {
-                            var baseUrl = window.location.href.replace('ComLink.html', '') + 'request/blank.html';
+                            var baseUrl = window.location.href.replace('ComLink.html', '') + '_testEndpoints/blank.html';
                             var comLink = new ComLink(baseUrl);
 
                             comLink.connect('abcde', function() {});
@@ -59,7 +59,7 @@
                             var deferred = new t.Deferred();
                             var i = 0;
                             var comLink = new ComLink(
-                                window.location.href.replace('ComLink.html', '') + '/request/longPoll.php'
+                                window.location.href.replace('ComLink.html', '') + '/_testEndpoints/longPoll.php'
                             );
                         
                             var callback = function(data) {
@@ -78,18 +78,18 @@
                     },
                     {
                         name: 'ComLink can be stopped',
-                        timeout: 1000,
+                        timeout: 600,
                         runTest: function(t) {
                             var deferred = new t.Deferred();
                             var i = 0;
                             var comLink = new ComLink(
-                                window.location.href.replace('ComLink.html', '') + '/request/longPoll.php'
+                                window.location.href.replace('ComLink.html', '') + '/_testEndpoints/longPoll.php'
                             );
                         
                             setTimeout(function() { 
                                 t.assertEqual(2, i);
                                 deferred.resolve();
-                            }, 900);
+                            }, 500);
 
                             var callback = function(data) {
                                 if (data === 2) {

@@ -23,7 +23,7 @@
                                 t.assertTrue(window.iframeTestBoolean);
                             }
                             var iframe = Iframe(
-                                window.location.href.replace('Iframe.html', '') + 'iframeTestData.html?q=' + Date.now()
+                                window.location.href.replace('Iframe.html', '') + '../_testEndpoints/iframeTestData.html?q=' + Date.now()
                             );
                         }
                     },
@@ -31,7 +31,7 @@
                         name: 'Iframe can be destroyed',
                         runTest: function(t) {
                             var iframe = Iframe(
-                                window.location.href.replace('Iframe.html', '') + 'blank.html'
+                                window.location.href.replace('Iframe.html', '') + '../_testEndpoints/blank.html'
                             );
 
                             var iframeId = iframe._node.id;

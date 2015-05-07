@@ -1,0 +1,119 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+<html>
+	<head>
+		<title>Testing doped/ComLink</title>
+		<style type="text/css">
+			@import "../../dojo/resources/dojo.css";
+		</style>
+		<script>
+			var dojoConfig = {
+				async: true
+			};
+		</script>
+		<script type="text/javascript" src="../../dojo/dojo.js"></script>
+		<script type="text/javascript">
+			require([
+                "doh", 
+                "doped/ComLink", 
+                "doped/errors/DuplicateConnectionIdError", 
+                "dojo/domReady!"
+            ], function(doh, ComLink, DuplicateConnectionIdError){
+				doh.register("doped/ComLink", [
+                    {
+                        name: 'Uri parcer works with query string',
+                        runTest: function(t) {
+                            var baseUrl = window.location.href.replace('ComLink.html', '') + 'request/blank.html';
+                            var comLink = new ComLink(
+                                baseUrl + '?query=true&bar=foo&gruu=1'
+                            );
+                        
+                            t.assertEqual({query: 'true', bar: 'foo', gruu: '1'}, comLink._uri.query);
+                            t.assertEqual(baseUrl, comLink._uri.url);
+                        }
+                    },
+                    {
+                        name: 'Uri parcer works without query string',
+                        runTest: function(t) {
+                            var baseUrl = window.location.href.replace('ComLink.html', '') + 'request/blank.html';
+                            var comLink = new ComLink(baseUrl);
+
+                            t.assertEqual({}, comLink._uri.query);
+                            t.assertEqual(baseUrl, comLink._uri.url);
+                        }
+                    },
+                    {
+                        name: 'Duplicate connection id are not allowed',
+                        runTest: function(t) {
+                            var baseUrl = window.location.href.replace('ComLink.html', '') + 'request/blank.html';
+                            var comLink = new ComLink(baseUrl);
+
+                            comLink.connect('abcde', function() {});
+                            t.assertError(DuplicateConnectionIdError, comLink, 'connect', ['abcde', function() {}]);
+                        }
+                    },
+                    {
+                        name: 'ComLink works with long polling',
+                        timeout: 2000,
+                        runTest: function(t) {
+                            var deferred = new t.Deferred();
+                            var i = 0;
+                            var comLink = new ComLink(
+                                window.location.href.replace('ComLink.html', '') + '/request/longPoll.php'
+                            );
+                        
+                            var callback = function(data) {
+                                if (i !== data) {
+                                    deferred.reject('Data has not the expected value');
+                                } else if (data === 4) {
+                                    deferred.resolve();
+                                }
+                                i++;
+                            }
+
+                            comLink.connect('frooBraa', callback);
+                            
+                            return deferred;
+                        }
+                    },
+                    {
+                        name: 'ComLink can be stopped',
+                        timeout: 1000,
+                        runTest: function(t) {
+                            var deferred = new t.Deferred();
+                            var i = 0;
+                            var comLink = new ComLink(
+                                window.location.href.replace('ComLink.html', '') + '/request/longPoll.php'
+                            );
+                        
+                            setTimeout(function() { 
+                                t.assertEqual(2, i);
+                                deferred.resolve();
+                            }, 900);
+
+                            var callback = function(data) {
+                                if (data === 2) {
+                                    comLink.disconnect('frooBraa');
+                                    return;
+                                } else if (data > 2) {
+                                    deferred.reject('Callback was called even after the disconnection');
+                                }
+
+                                i++;
+                            }
+
+                            comLink.connect('frooBraa', callback);
+                            
+                            return deferred;
+                        }
+                    }
+				]);
+				doh.run();
+			});
+
+		</script>
+	</head>
+	<body>
+            <div>doped/ComLink</div>
+	</body>
+</html>

@@ -6,7 +6,7 @@
 $callBack = $_GET['callback'];
 for($i = 0; $i < 5; $i++): ?>
 
-    <p>Script #<?php echo $i; ?></p>
+<p>Script #<?php echo $i; ?></p>
 <script>
     if (window.parent.hasOwnProperty('<?php echo $callBack; ?>')) {
         window.parent.<?php echo $callBack ?>(<?php echo $i; ?>);
@@ -14,17 +14,8 @@ for($i = 0; $i < 5; $i++): ?>
 </script>
 
 
-
-
-
-
-
-
-
-
-
 <?php
-    sleep(0.1);
+    usleep(10000);
     ob_flush();
     flush();
 endfor; ?>

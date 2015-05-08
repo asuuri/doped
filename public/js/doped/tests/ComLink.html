@@ -49,8 +49,11 @@
                             var baseUrl = window.location.href.replace('ComLink.html', '') + '_testEndpoints/blank.html';
                             var comLink = new ComLink(baseUrl);
 
-                            comLink.connect('abcde', function() {});
-                            t.assertError(DuplicateConnectionIdError, comLink, 'connect', ['abcde', function() {}]);
+                            comLink.connect('abcde_1', function() {});
+                            t.assertError(DuplicateConnectionIdError, comLink, 'connect', ['abcde_1', function() {}]);
+                            
+                            //Teardown
+                            comLink.disconnect('abcde_1');
                         }
                     },
                     {
@@ -68,11 +71,13 @@
                                     deferred.reject('Data has not the expected value');
                                 } else if (data === 4) {
                                     deferred.resolve();
+                                    //Teardown
+                                    comLink.disconnect('abcde_2');
                                 }
                                 i++;
                             }
 
-                            comLink.connect('frooBraa', callback);
+                            comLink.connect('abcde_2', callback);
                             
                             return deferred;
                         }
@@ -90,11 +95,11 @@
                             setTimeout(function() { 
                                 t.assertEqual(2, i);
                                 deferred.resolve();
-                            }, 500);
+                            }, 200);
 
                             var callback = function(data) {
                                 if (data === 2) {
-                                    comLink.disconnect('frooBraa');
+                                    comLink.disconnect('abcde_3');
                                     return;
                                 } else if (data > 2) {
                                     deferred.reject('Callback was called even after the disconnection');
@@ -103,7 +108,7 @@
                                 i++;
                             }
 
-                            comLink.connect('frooBraa', callback);
+                            comLink.connect('abcde_3', callback);
                             
                             return deferred;
                         }
@@ -113,7 +118,7 @@
                         timeout: 2000,
                         runTest: function(t) {
                             var deferred = new t.Deferred();
-                            var id = Date.now();
+                            var id = 'abcde_4';
                             var baseUrl = window.location.href.replace('ComLink.html', '') + 
                                 '_testEndpoints/cmdProxyTransceiver.php';
                             var comLink = new ComLink(baseUrl + '?mode=tx');
@@ -121,22 +126,65 @@
                             comLink.connect(id, function(data) {
                                 if (data === 'quit') {
                                     deferred.resolve();
+                                    //Teardown
+                                    comLink.disconnect(id);
                                 }
                             });
 
                             setTimeout(function() {
                                 request(baseUrl + '?mode=rx&cmd=bruu&connectionId=' + id).then(function() {
                                 });
-                            }, 500);
+                            }, 100);
                             
                             setTimeout(function() {
                                 request(baseUrl + '?mode=rx&cmd=quit&connectionId=' + id).then(function() {
                                 });
-                            }, 1000);
+                            }, 200);
                             
                             setTimeout(function() {
-                                console.log(deferred);
-                            }, 1200);
+                                if (!deferred.isResolved()) {
+                                    deferred.reject('Commands where not proxied.');
+                                }
+                            }, 300);
+                            
+                            return deferred;
+                        }
+                    },
+                    {
+                        name: 'Test comlink watchdog',
+                        timeout: 10000,
+                        runTest: function(t) {
+                            var deferred = new t.Deferred();
+                            var id = 'abcde_5';
+                            var baseUrl = window.location.href.replace('ComLink.html', '') + 
+                                '_testEndpoints/cmdProxyTransceiver.php';
+                            var comLink = new ComLink(baseUrl + '?mode=tx&wdto=1');
+
+                            comLink.connect(id, function(data) {
+                                console.debug(data);
+                                if (data === 'passed') {
+                                    deferred.resolve();
+                                }
+                            });
+
+                            setTimeout(function() {
+                                request(baseUrl + '?mode=rx&cmd=quit&connectionId=' + id).then(function(data) {
+                                    console.log('quit_1', data);
+                                });
+                            }, 500);
+                            
+                            setTimeout(function() {
+                                request(baseUrl + '?mode=rx&cmd=passed&connectionId=' + id).then(function(data) {
+                                    console.log('passed', data);
+                                });
+                            }, 5000);
+                            
+                            setTimeout(function() {
+                                request(baseUrl + '?mode=rx&cmd=quit&connectionId=' + id).then(function(data) {
+                                    console.log('quit_2', data);
+                                });
+                            }, 7000);
+                            
                             
                             return deferred;
                         }

@@ -5,13 +5,12 @@ define('MODE_TRANSMITTER', 'tx');
 
 $connectionId = filter_input(INPUT_GET, 'connectionId');
 $callback = filter_input(INPUT_GET, 'callback');
-$watchdogCallBack = filter_input(INPUT_GET, 'wd');
-$wdTimeout = filter_input(INPUT_GET, 'wdttl');
+$watchdogCallBack = filter_input(INPUT_GET, 'watchdog');
+$wdTimeout = filter_input(INPUT_GET, 'wdto');
 
 if (!$connectionId) {
     throw new Exception('Connection "id" is not set!');
 }
-
 
 if (!$wdTimeout) {
     $wdTimeout = 10;
@@ -29,7 +28,7 @@ if ($_GET['mode'] === MODE_TRANSMITTER) {
         socket_set_nonblock($socket);
         $quit = false;
         $cmd = '';
-        $time = time();
+        $time = 0;
 
         while ($quit === false) {
             if (($client = socket_accept($socket)) !== false) {
@@ -74,7 +73,8 @@ if ($_GET['mode'] === MODE_TRANSMITTER) {
         window.parent.<?php echo $watchdogCallBack; ?>();
     }
 </script>
-            <?php
+
+<?php
                 ob_flush();
                 flush();
             }
@@ -96,7 +96,7 @@ if ($_GET['mode'] === MODE_TRANSMITTER) {
         );
         $sent = socket_write($socket, json_encode($data));
         
-        var_dump(socket_read($socket, 100));
+        echo socket_read($socket, 100);
     }
 
     socket_close($socket);

@@ -18,11 +18,13 @@
                     {
                         name: 'Iframe can set the parent window value',
                         runTest: function(t) {
+                            var iframe;
                             window.iframeTestBoolean = false;
                             window.iframeTestCallback = function() {
                                 t.assertTrue(window.iframeTestBoolean);
+                                iframe.destroy();
                             }
-                            var iframe = Iframe(
+                            iframe = Iframe(
                                 window.location.href.replace('Iframe.html', '') + '../_testEndpoints/iframeTestData.html?q=' + Date.now()
                             );
                         }

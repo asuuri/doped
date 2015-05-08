@@ -14,12 +14,13 @@
 		<script type="text/javascript" src="../../dojo/dojo.js"></script>
 		<script type="text/javascript">
 			require([
-                "doh", 
-                "doped/ComLink", 
-                "doped/errors/DuplicateConnectionIdError", 
-                "dojo/domReady!"
-            ], function(doh, ComLink, DuplicateConnectionIdError){
-				doh.register("doped/ComLink", [
+                'doh', 
+                'doped/ComLink', 
+                'doped/errors/DuplicateConnectionIdError',
+                'dojo/request',
+                'dojo/domReady!'
+            ], function(doh, ComLink, DuplicateConnectionIdError, request){
+				doh.register('doped/ComLink', [
                     {
                         name: 'Uri parcer works with query string',
                         runTest: function(t) {
@@ -103,6 +104,39 @@
                             }
 
                             comLink.connect('frooBraa', callback);
+                            
+                            return deferred;
+                        }
+                    },
+                    {
+                        name: 'Test command proxying',
+                        timeout: 2000,
+                        runTest: function(t) {
+                            var deferred = new t.Deferred();
+                            var id = Date.now();
+                            var baseUrl = window.location.href.replace('ComLink.html', '') + 
+                                '_testEndpoints/cmdProxyTransceiver.php';
+                            var comLink = new ComLink(baseUrl + '?mode=tx');
+
+                            comLink.connect(id, function(data) {
+                                if (data === 'quit') {
+                                    deferred.resolve();
+                                }
+                            });
+
+                            setTimeout(function() {
+                                request(baseUrl + '?mode=rx&cmd=bruu&connectionId=' + id).then(function() {
+                                });
+                            }, 500);
+                            
+                            setTimeout(function() {
+                                request(baseUrl + '?mode=rx&cmd=quit&connectionId=' + id).then(function() {
+                                });
+                            }, 1000);
+                            
+                            setTimeout(function() {
+                                console.log(deferred);
+                            }, 1200);
                             
                             return deferred;
                         }

@@ -24,7 +24,7 @@ define(
             },
 
             _setupCallback: function(/*string*/ connectionId) {
-                var callbackName = this._getCallbackName();
+                var callbackName = this._getCallbackName(connectionId);
                 var callback = lang.hitch(this, function(data) {
                     this._callbackHandler(connectionId, data);
                 });

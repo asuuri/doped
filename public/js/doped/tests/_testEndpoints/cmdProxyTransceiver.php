@@ -20,9 +20,15 @@ $address = '/tmp/doped-rx_' . $connectionId . '.socket';
 
 if ($_GET['mode'] === MODE_TRANSMITTER) {
     $socket = socket_create(AF_UNIX, SOCK_STREAM, 0);
+    
+    if ($socket === false) {
+        throw new Exception('Unable to create the socket.');
+    }
+
     socket_set_option($socket, SOL_SOCKET, SO_REUSEADDR, 1);
             
     if ($socket) {
+        unlink($address);
         socket_bind($socket, $address);
         socket_listen($socket);
         socket_set_nonblock($socket);

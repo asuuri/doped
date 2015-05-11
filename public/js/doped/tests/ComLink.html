@@ -126,8 +126,32 @@
                             var connection = comLink.connect(id, function() {});
 
                             connection.then(function() {
-                                deferred.resolve();
-                                comLink.disconnect(id);
+                                request(baseUrl + '?mode=rx&cmd=quit&connectionId=' + id).then(function() {
+                                    deferred.resolve();
+                                    comLink.disconnect(id);
+                                });
+                            });
+
+                            return deferred;
+                        }
+                    },
+                    {
+                        name: 'Allow slow start for comlink',
+                        timeout: 5000,
+                        runTest: function(t) {
+                            var deferred = new t.Deferred();
+                            var id = 'abcde_5';
+                            var baseUrl = window.location.href.replace('ComLink.html', '') +
+                                '_testEndpoints/cmdProxyTransceiver.php';
+                            var comLink = new ComLink(baseUrl + '?ttl=5&slowStart=2&watchdogTimeout=1&mode=tx');
+
+                            var connection = comLink.connect(id, function() {});
+
+                            connection.then(function() {
+                                request(baseUrl + '?mode=rx&cmd=quit&connectionId=' + id).then(function() {
+                                    deferred.resolve();
+                                    comLink.disconnect(id);
+                                });
                             });
 
                             return deferred;
@@ -138,7 +162,7 @@
                         timeout: 2000,
                         runTest: function(t) {
                             var deferred = new t.Deferred();
-                            var id = 'abcde_5';
+                            var id = 'abcde_6';
                             var baseUrl = window.location.href.replace('ComLink.html', '') +
                                 '_testEndpoints/cmdProxyTransceiver.php';
                             var comLink = new ComLink(baseUrl + '?ttl=2&mode=tx');
@@ -171,18 +195,20 @@
                     },
                     {
                         name: 'Test comlink watchdog',
-                        timeout: 10000,
+                        timeout: 6000,
                         runTest: function(t) {
                             var deferred = new t.Deferred();
-                            var id = 'abcde_6';
+                            var id = 'abcde_7';
                             var baseUrl = window.location.href.replace('ComLink.html', '') +
                                 '_testEndpoints/cmdProxyTransceiver.php';
-                            var comLink = new ComLink(baseUrl + '?mode=tx&wdto=1');
+                            var comLink = new ComLink(baseUrl + '?ttl=6&mode=tx&watchdogTimeout=1');
 
                             var connection = comLink.connect(id, function(data) {
                                 if (data === 'passed') {
                                     comLink.disconnect('abcde_5');
-                                    deferred.resolve();
+                                    request(baseUrl + '?mode=rx&cmd=quit&connectionId=' + id).then(function() {
+                                        deferred.resolve();
+                                    });
                                 }
                             });
 
@@ -190,7 +216,7 @@
                                 request(baseUrl + '?mode=rx&cmd=quit&connectionId=' + id).then(function() {
                                     setTimeout(function() {
                                         request(baseUrl + '?mode=rx&cmd=passed&connectionId=' + id);
-                                    }, 3000);
+                                    }, 4000);
                                 });
                             });
 

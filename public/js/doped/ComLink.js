@@ -14,6 +14,8 @@ define(
 
             _uri: {url: null, query: {}},
 
+            _watchdogEnabled: false,
+
             _setupCallbacks: function(connectionId, onReady) {
                 window[this._getConnectionNodeName(connectionId)] = {
                     ready:    lang.hitch(this, onReady),
@@ -43,9 +45,9 @@ define(
                     lang.hitch(
                         this,
                         function() {
-                            if (this._connections[connectionId].connectionActive) {
+                            if (this._connections[connectionId].connectionActive && this._watchdogEnabled) {
                                 this._connections[connectionId].connectionActive = false;
-                            } else {
+                            } else if (this._watchdogEnabled) {
                                 this._watchdogTriggered(connectionId);
                             }
                         }
@@ -100,6 +102,7 @@ define(
                 if (this._connections[connectionId] === undefined) {
                     this._setupCallbacks(connectionId, function() {
                         if (!deferred.isResolved()) {
+                            this._watchdogEnabled = true;
                             deferred.resolve();
                         }
                     });

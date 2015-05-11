@@ -13,6 +13,7 @@ $options = filter_input_array(
         'mode' => INPUT_FILTER,
         'cmd' => INPUT_FILTER,
         'watchdogTimeout' => FILTER_SANITIZE_NUMBER_INT,
+        'slowStart' => FILTER_SANITIZE_NUMBER_INT,
     )
 );
 
@@ -42,8 +43,6 @@ if ($options['mode'] === MODE_TRANSMITTER) {
         throw new Exception('Unable to create the socket.');
     }
 
-    //socket_set_option($socket, SOL_SOCKET, SO_REUSEADDR, 1);
-
     socket_bind($socket, $address);
     socket_listen($socket);
     socket_set_nonblock($socket);
@@ -51,6 +50,11 @@ if ($options['mode'] === MODE_TRANSMITTER) {
     $quit = false;
     $cmd = '';
     $time = 0;
+
+    if ($options['slowStart']) {
+        sleep($options['slowStart']);
+    }
+
     $startTime = time();
 
     ?>

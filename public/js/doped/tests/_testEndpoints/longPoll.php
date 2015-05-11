@@ -3,13 +3,13 @@
     <body>
 <?php
 
-$callBack = $_GET['callback'];
+$callBack = $_GET['connectionNode'];
 for($i = 0; $i < 5; $i++): ?>
 
 <p>Script #<?php echo $i; ?></p>
 <script>
-    if (window.parent.hasOwnProperty('<?php echo $callBack; ?>')) {
-        window.parent.<?php echo $callBack ?>(<?php echo $i; ?>);
+    if (window.parent && window.parent.hasOwnProperty('<?php echo $callBack; ?>')) {
+        window.parent.<?php echo $callBack; ?>.message(<?php echo $i; ?>);
     }
 </script>
 

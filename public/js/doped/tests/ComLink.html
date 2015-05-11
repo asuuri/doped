@@ -14,8 +14,8 @@
 		<script type="text/javascript" src="../../dojo/dojo.js"></script>
 		<script type="text/javascript">
 			require([
-                'doh', 
-                'doped/ComLink', 
+                'doh',
+                'doped/ComLink',
                 'doped/errors/DuplicateConnectionIdError',
                 'dojo/request',
                 'dojo/domReady!'
@@ -28,7 +28,7 @@
                             var comLink = new ComLink(
                                 baseUrl + '?query=true&bar=foo&gruu=1'
                             );
-                        
+
                             t.assertEqual({query: 'true', bar: 'foo', gruu: '1'}, comLink._uri.query);
                             t.assertEqual(baseUrl, comLink._uri.url);
                         }
@@ -51,7 +51,7 @@
 
                             comLink.connect('abcde_1', function() {});
                             t.assertError(DuplicateConnectionIdError, comLink, 'connect', ['abcde_1', function() {}]);
-                            
+
                             //Teardown
                             comLink.disconnect('abcde_1');
                         }
@@ -65,7 +65,7 @@
                             var comLink = new ComLink(
                                 window.location.href.replace('ComLink.html', '') + '/_testEndpoints/longPoll.php'
                             );
-                        
+
                             var callback = function(data) {
                                 if (i !== data) {
                                     deferred.reject('Data has not the expected value');
@@ -78,7 +78,7 @@
                             }
 
                             comLink.connect('abcde_2', callback);
-                            
+
                             return deferred;
                         }
                     },
@@ -91,8 +91,8 @@
                             var comLink = new ComLink(
                                 window.location.href.replace('ComLink.html', '') + '/_testEndpoints/longPoll.php'
                             );
-                        
-                            setTimeout(function() { 
+
+                            setTimeout(function() {
                                 t.assertEqual(2, i);
                                 deferred.resolve();
                             }, 200);
@@ -109,7 +109,27 @@
                             }
 
                             comLink.connect('abcde_3', callback);
-                            
+
+                            return deferred;
+                        }
+                    },
+                    {
+                        name: 'Comlink informs when ready',
+                        timeout: 500,
+                        runTest: function(t) {
+                            var deferred = new t.Deferred();
+                            var id = 'abcde_4';
+                            var baseUrl = window.location.href.replace('ComLink.html', '') +
+                                '_testEndpoints/cmdProxyTransceiver.php';
+                            var comLink = new ComLink(baseUrl + '?ttl=1&mode=tx');
+
+                            var connection = comLink.connect(id, function() {});
+
+                            connection.then(function() {
+                                deferred.resolve();
+                                comLink.disconnect(id);
+                            });
+
                             return deferred;
                         }
                     },
@@ -118,12 +138,12 @@
                         timeout: 2000,
                         runTest: function(t) {
                             var deferred = new t.Deferred();
-                            var id = 'abcde_4';
-                            var baseUrl = window.location.href.replace('ComLink.html', '') + 
+                            var id = 'abcde_5';
+                            var baseUrl = window.location.href.replace('ComLink.html', '') +
                                 '_testEndpoints/cmdProxyTransceiver.php';
-                            var comLink = new ComLink(baseUrl + '?mode=tx');
+                            var comLink = new ComLink(baseUrl + '?ttl=2&mode=tx');
 
-                            comLink.connect(id, function(data) {
+                            var connection = comLink.connect(id, function(data) {
                                 if (data === 'quit') {
                                     deferred.resolve();
                                     //Teardown
@@ -131,22 +151,21 @@
                                 }
                             });
 
-                            setTimeout(function() {
-                                request(baseUrl + '?mode=rx&cmd=bruu&connectionId=' + id).then(function() {
+                            connection.then(function() {
+                                request(baseUrl + '?mode=rx&cmd=bruu&connectionId=' + id).then(function(data) {
+                                    setTimeout(function() {
+                                        request(baseUrl + '?mode=rx&cmd=quit&connectionId=' + id);
+                                    }, 200);
                                 });
-                            }, 100);
-                            
-                            setTimeout(function() {
-                                request(baseUrl + '?mode=rx&cmd=quit&connectionId=' + id).then(function() {
-                                });
-                            }, 200);
-                            
+                            });
+
+
                             setTimeout(function() {
                                 if (!deferred.isResolved()) {
                                     deferred.reject('Commands where not proxied.');
                                 }
-                            }, 300);
-                            
+                            }, 600);
+
                             return deferred;
                         }
                     },
@@ -155,30 +174,26 @@
                         timeout: 10000,
                         runTest: function(t) {
                             var deferred = new t.Deferred();
-                            var id = 'abcde_5';
-                            var baseUrl = window.location.href.replace('ComLink.html', '') + 
+                            var id = 'abcde_6';
+                            var baseUrl = window.location.href.replace('ComLink.html', '') +
                                 '_testEndpoints/cmdProxyTransceiver.php';
                             var comLink = new ComLink(baseUrl + '?mode=tx&wdto=1');
 
-                            comLink.connect(id, function(data) {
+                            var connection = comLink.connect(id, function(data) {
                                 if (data === 'passed') {
                                     comLink.disconnect('abcde_5');
                                     deferred.resolve();
                                 }
                             });
 
-                            setTimeout(function() {
-                                request(baseUrl + '?mode=rx&cmd=quit&connectionId=' + id).then(function(data) {
-                                    console.log('quit_1', data);
+                            connection.then(function() {
+                                request(baseUrl + '?mode=rx&cmd=quit&connectionId=' + id).then(function() {
+                                    setTimeout(function() {
+                                        request(baseUrl + '?mode=rx&cmd=passed&connectionId=' + id);
+                                    }, 3000);
                                 });
-                            }, 500);
-                            
-                            setTimeout(function() {
-                                request(baseUrl + '?mode=rx&cmd=passed&connectionId=' + id).then(function(data) {
-                                    console.log('passed', data);
-                                });
-                            }, 4000);
-                            
+                            });
+
                             return deferred;
                         }
                     }

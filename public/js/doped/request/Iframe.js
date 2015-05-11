@@ -1,21 +1,18 @@
 define(
     [
         'dojo/_base/declare',
-        'dojo/dom-construct'
+        'dojo/dom-construct',
+        'dojo/on'
     ],
-    function(declare, domConstruct) {
+    function(declare, domConstruct, on) {
         return declare(null, {
             _node: null,
-
-            _useFake: function() {
-
-            },
 
             _generateId: function() {
                 return 'dopedIframe-' + Date.now();
             },
 
-            constructor: function(uri) {
+            constructor: function(uri, onLoad) {
                 this._node = domConstruct.create(
                     'iframe',
                     {
@@ -23,6 +20,10 @@ define(
                         id: this._generateId()
                     }
                 );
+
+                if (typeof onLoad === 'function') {
+                    on(this._node, 'load', onLoad);
+                }
 
                 domConstruct.place(
                     this._node,
@@ -32,7 +33,6 @@ define(
             },
 
             reload: function() {
-                console.log('Reload');
                 this._node.contentWindow.location.reload();
 
                 return this;
@@ -42,9 +42,6 @@ define(
                 domConstruct.destroy(this._node);
 
                 return this;
-            },
-
-            updateUrl: function(uri) {
             }
         });
     }

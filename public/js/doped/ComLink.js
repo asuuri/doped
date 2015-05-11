@@ -2,16 +2,29 @@ define(
     [
         'dojo/_base/declare',
         './errors/DuplicateConnectionIdError',
+        'dojo/Deferred',
         'dojo/_base/lang',
         'dojo/io-query',
         'doped/request/Iframe'
     ],
-    function(declare, DuplicateConnectionIdError, lang, ioQuery, Iframe) {
+    function(declare, DuplicateConnectionIdError, Deferred, lang, ioQuery, Iframe) {
         var WATCHDOG_INTERVAL = 1500;
         return declare(null, {
             _connections: null,
 
             _uri: {url: null, query: {}},
+
+            _setupCallbacks: function(connectionId, onReady) {
+                window[this._getConnectionNodeName(connectionId)] = {
+                    ready:    lang.hitch(this, onReady),
+                    message: lang.hitch(this, function(data) { this._callbackHandler(connectionId, data); }),
+                    watchdog: lang.hitch(this, '_resetWatchdog', [connectionId])
+                };
+            },
+
+            _getConnectionNodeName: function(/*string*/ connectionId) {
+                return 'comlinkNode_' + connectionId;
+            },
 
             _callbackHandler: function(/*string*/ connectionId, /*[mixed]*/ data) {
                 if (this._connections[connectionId] && typeof this._connections[connectionId].handler === 'function') {
@@ -19,39 +32,13 @@ define(
                 }
             },
 
-            _getCallbackName: function(/*string*/ connectionId) {
-                return 'comlink_' + connectionId;
-            },
-
-            _setupCallback: function(/*string*/ connectionId) {
-                var callbackName = this._getCallbackName(connectionId);
-                var callback = lang.hitch(this, function(data) {
-                    this._callbackHandler(connectionId, data);
-                });
-
-                window[callbackName] = callback;
-
-                return callbackName;
-            },
-
             _resetWatchdog: function(/*string*/ connectionId) {
-                console.log('wd reset: ' + connectionId);
                 if (this._connections[connectionId]) {
                     this._connections[connectionId].connectionActive = true;
                 }
             },
 
-            _getWatchdogCallbackName: function(/*string*/ connectionId) {
-                return 'comlinkWd_' + connectionId;
-            },
-
             _setupWatchdog: function(/*string*/ connectionId) {
-                window[this._getWatchdogCallbackName(connectionId)] = lang.hitch(
-                    this,
-                    '_resetWatchdog',
-                    [connectionId]
-                );
-
                 return setInterval(
                     lang.hitch(
                         this,
@@ -68,17 +55,17 @@ define(
             },
 
             _watchdogTriggered: function(/*string*/ connectionId) {
-                console.log('watchdogTriggered for connection: ' + connectionId);
-                this._connections[connectionId].iframe.reload();
+                if (this._connections[connectionId]) {
+                    this._connections[connectionId].iframe.reload();
+                }
             },
 
-            _generateUrl: function(/*string*/ callbackName, /*string*/ connectionId) {
+            _generateUrl: function(/*string*/ connectionId) {
                 var query = lang.mixin(
                     this._uri.query,
                     {
-                        callback: callbackName,
-                        watchdog: this._getWatchdogCallbackName(connectionId),
                         connectionId: connectionId,
+                        connectionNode: this._getConnectionNodeName(connectionId)
                     }
                 );
 
@@ -108,15 +95,19 @@ define(
             },
 
             connect: function(/*string*/ connectionId, /*function*/ handler) {
-                var callbackName;
+                var deferred = new Deferred();
 
                 if (this._connections[connectionId] === undefined) {
-                    callbackName = this._setupCallback(connectionId);
+                    this._setupCallbacks(connectionId, function() {
+                        if (!deferred.isResolved()) {
+                            deferred.resolve();
+                        }
+                    });
 
                     this._connections[connectionId] = {
                         startTime: Date.now(),
-                        callbackName: callbackName,
-                        iframe: new Iframe(this._generateUrl(callbackName, connectionId)),
+                        callbackNode: this._getConnectionNodeName(connectionId),
+                        iframe: new Iframe(this._generateUrl(connectionId)),
                         handler: handler,
                         connectionActive: true,
                         watchdogIntervallId: this._setupWatchdog(connectionId)
@@ -125,16 +116,15 @@ define(
                     throw new DuplicateConnectionIdError();
                 }
 
-                return this;
+                return deferred;
             },
 
             disconnect: function(/*string*/ connectionId) {
                 if (this._connections.hasOwnProperty(connectionId)) {
                     this._connections[connectionId].iframe.destroy();
-                    delete window[this._getCallbackName(connectionId)];
                     clearInterval(this._connections[connectionId].watchdogIntervallId);
 
-                    delete this._connections[connectionId]
+                    delete this._connections[connectionId];
                 }
 
                 return this;

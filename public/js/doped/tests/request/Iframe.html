@@ -41,8 +41,20 @@
                             iframe.destroy();
                             t.assertEqual(0, query('iframe#' + iframeId).length);
                         }
+                    },
+                    {
+                        name: 'Iframe can take a function for onLoad event',
+                        runTest: function(t) {
+                            var deferred = new t.Deferred();
+                            var iframe = Iframe(
+                                window.location.href.replace('Iframe.html', '') + '../_testEndpoints/blank.html',
+                                function() {
+                                    deferred.resolve();
+                                    iframe.destroy();
+                                }
+                            );
+                        }
                     }
-                                    
 				]);
 				doh.run();
 			});

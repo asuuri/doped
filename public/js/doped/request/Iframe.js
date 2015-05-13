@@ -17,7 +17,8 @@ define(
                     'iframe',
                     {
                         src: uri,
-                        id: this._generateId()
+                        id: this._generateId(),
+                        style: 'display: hidden;'
                     }
                 );
 

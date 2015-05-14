@@ -86,6 +86,7 @@ function startHandler($client, $data) {
         while ($quit === false) {
             if (($client = socket_accept($socket)) !== false) {
                 logger('New incomming connection');
+                socket_set_nonblock($client);
                 $json = socket_read($client, 100, PHP_NORMAL_READ);
                 $data = json_decode($json, true);
 
@@ -103,7 +104,7 @@ function startHandler($client, $data) {
 
                     logger('All clients informed: ');
                     socket_write(
-                        $clientSocket,
+                        $client,
                         json_encode(array(
                             'status' => $cmd,
                         )) . "\n"

@@ -4,8 +4,9 @@ define('MODE_CLIENT', 'client');
 define('MODE_CONTROLLER', 'controller');
 define('INPUT_FILTER', FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
 
+ob_implicit_flush(true);
 set_time_limit(0);
-ob_implicit_flush();
+
 
 $request = (object) filter_input_array(
     INPUT_GET,
@@ -32,7 +33,6 @@ if ($request->connectionId) {
             $sent = socket_write($socket, json_encode($data) . "\n");
 
             echo socket_read($socket, 100, PHP_NORMAL_READ);
-            @socket_close($socket);
         } else {
             echo json_encode(array(
                 'status' => 500,
@@ -43,6 +43,7 @@ if ($request->connectionId) {
         socket_close($socket);
         exit();
     } else if ($request->mode === MODE_CLIENT) {
+        echo 'Creating...';
         $socket = socket_create(AF_UNIX, SOCK_STREAM, 0);
 
         if ($socket === false) {
@@ -50,6 +51,9 @@ if ($request->connectionId) {
         }
 
         $socket = socket_create(AF_UNIX, SOCK_STREAM, 0);
+        echo 'Connecting...';
+        ob_flush();
+        flush();
         if (@socket_connect($socket, $address)) {
             $sent = socket_write($socket, json_encode(array('command' => '')) . "\n");
 
@@ -70,7 +74,7 @@ if (window.parent && window.parent.hasOwnProperty('<?php echo $request->connecti
             flush();
 
             while ($quit === false) {
-                $json = socket_read($socket, 100, PHP_NORMAL_READ);
+                $json = socket_read($socket, 100);
                 $data = json_decode($json, true);
 
                 if (isset($data['command'])) {

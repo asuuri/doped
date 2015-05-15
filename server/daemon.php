@@ -23,7 +23,7 @@ function sig_handler($sig) {
         break;
 
         case SIGCHLD:
-            echo "Created child.";
+            echo "Created child.\n";
             pcntl_waitpid(-1, $status);
         break;
     }
@@ -51,7 +51,7 @@ function startHandler($client, $data) {
             json_encode(array(
                 'status' => 200,
                 'message' => 'Connection stablished.',
-                'connectionHash' => $hash,
+                'connectionId' => $hash,
                 'pid' => $pid,
             )) . "\n"
         );
@@ -106,7 +106,8 @@ function startHandler($client, $data) {
                     socket_write(
                         $client,
                         json_encode(array(
-                            'status' => $cmd,
+                            'status' => 200,
+                            'command' => $cmd,
                         )) . "\n"
                     );
                 } else {
@@ -114,11 +115,8 @@ function startHandler($client, $data) {
                 }
             }
 
-            if ($cmd) {
-                if ($cmd === 'quit') {
-                    $quit = true;
-                }
-
+            if ($cmd && $cmd === 'quit') {
+                $quit = true;
                 $cmd = null;
             }
 

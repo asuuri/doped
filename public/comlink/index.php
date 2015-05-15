@@ -8,6 +8,8 @@ ob_implicit_flush(true);
 set_time_limit(0);
 
 
+
+
 $request = (object) filter_input_array(
     INPUT_GET,
     array(
@@ -15,7 +17,8 @@ $request = (object) filter_input_array(
         'connectionNode' => INPUT_FILTER,
         'mode' => INPUT_FILTER,
         'command' => INPUT_FILTER,
-    )
+    ),
+    true
 );
 
 if ($request->connectionId) {
@@ -32,7 +35,7 @@ if ($request->connectionId) {
 
             $sent = socket_write($socket, json_encode($data) . "\n");
 
-            echo socket_read($socket, 100, PHP_NORMAL_READ);
+            echo socket_read($socket, 500, PHP_NORMAL_READ);
         } else {
             echo json_encode(array(
                 'status' => 500,
@@ -138,7 +141,7 @@ if (window.parent && window.parent.hasOwnProperty('<?php echo $request->connecti
 
         $sent = socket_write($socket, json_encode($data));
 
-        echo socket_read($socket, 100);
+        echo socket_read($socket, 500, PHP_NORMAL_READ);
     } else {
         echo json_encode(array(
             'status' => 500,

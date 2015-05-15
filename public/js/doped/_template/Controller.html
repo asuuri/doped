@@ -1,6 +1,9 @@
 <div>
     <h1>Controller</h1>
-    <button data-dojo-attach-event="onclick: _create" data-dojo-attach-point="createBtnNode">Create</button>
-    <button data-dojo-attach-event="onclick: _prev" data-dojo-attach-point="prevBtnNode">Prev</button>
-    <button data-dojo-attach-event="onclick: _next" data-dojo-attach-point="nextBtnNode">Next</button>
+    <p>
+        <p><a style="visibility: hidden;" data-dojo-attach-point="linkNode" href="/#" target="_blank">presentation</a></p>
+        <button data-dojo-attach-event="onclick: _create" data-dojo-attach-point="createBtnNode">Start</button>
+    </p>
+    <button disabled="disabled" data-dojo-attach-event="onclick: _prev" data-dojo-attach-point="prevBtnNode">Prev</button>
+    <button disabled="disabled" data-dojo-attach-event="onclick: _next" data-dojo-attach-point="nextBtnNode">Next</button>
 </div>

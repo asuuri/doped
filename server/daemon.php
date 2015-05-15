@@ -120,12 +120,14 @@ function startHandler($client, $data) {
 
                 if (isset($data['command']) && $data['command'] !== '') {
                     $cmd = $data['command'];
+
                     logger('New controller command: ' . $cmd);
 
                     foreach ($clients as $index => $clientSocket) {
                         logger('Sending message to a client: ' . $cmd);
                         $written = @socket_write($clientSocket, json_encode(array(
                             'command' => $cmd,
+                            'slide' => isset($data['slide'])?$data['slide']:null,
                         )) . "\n");
 
                         if ($written !== false) {
@@ -142,6 +144,7 @@ function startHandler($client, $data) {
                         json_encode(array(
                             'status' => 200,
                             'command' => $cmd,
+                            'totalClients' => count($clients),
                         )) . "\n"
                     );
                 } else {

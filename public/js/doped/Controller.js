@@ -22,6 +22,8 @@ define(
 
             _connectionId: '',
 
+            _slide: 0,
+
             _create: function() {
                 if (!domClass.contains(this.createBtnNode, 'create')) {
                     attr.set(this.createBtnNode, 'disabled', 'disabled');
@@ -85,47 +87,36 @@ define(
                     );
                 }
             },
-            _prev: function() {
+            _update: function() {
+                var slide = this._slide;
                 request(
                     '../comlink',
                     {
                         handleAs: 'json',
                         preventCache: true,
                         query: {
-                            command: 'prev',
+                            command: 'update',
+                            slide: slide,
                             mode: 'controller',
                             connectionId: this._connectionId
                         }
                     }
                 ).then(
                     lang.hitch(this, function(data) {
-                        console.log('prev', data);
+                        console.log(data);
                     }),
                     lang.hitch(this, function(data) {
-                        console.log('failed', data);
+                        console.log(data);
                     })
                 );
             },
+            _prev: function() {
+                this._slide--;
+                this._update();
+            },
             _next: function() {
-                request(
-                    '../comlink',
-                    {
-                        handleAs: 'json',
-                        preventCache: true,
-                        query: {
-                            command: 'next',
-                            mode: 'controller',
-                            connectionId: this._connectionId
-                        }
-                    }
-                ).then(
-                    lang.hitch(this, function(data) {
-                        console.log('next', data);
-                    }),
-                    lang.hitch(this, function(data) {
-                        console.log('failed', data);
-                    })
-                );
+                this._slide++;
+                this._update();
             }
         });
     }

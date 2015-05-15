@@ -64,15 +64,12 @@ define(
                 console.log('Presentation ended');
             },
 
-            _handleCommand: function(command) {
-                switch(command) {
-                    case 'prev':
+            _handleCommand: function(data) {
+                console.log(data);
+                switch(data['command']) {
+                    case 'update':
                         this._counter--;
-                        html.set(this.counterNode, '' + this._counter);
-                        break;
-                    case 'next':
-                        this._counter++;
-                        html.set(this.counterNode, '' + this._counter);
+                        html.set(this.counterNode, '' + data['slide']);
                         break;
                     case 'quit':
                         this._comlink.disconnect(this._connectionId).then(lang.hitch(this, '_presentationEnded'));

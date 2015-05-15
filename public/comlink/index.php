@@ -12,6 +12,7 @@ $request = (object) filter_input_array(
     array(
         'connectionId' => INPUT_FILTER,
         'connectionNode' => INPUT_FILTER,
+        'slide' => INPUT_FILTER,
         'mode' => INPUT_FILTER,
         'command' => INPUT_FILTER,
     ),
@@ -28,6 +29,7 @@ if ($request->connectionId) {
         if (@socket_connect($socket, $address)) {
             $data = array(
                 'command' => $request->command,
+                'slide' => $request->slide,
             );
 
             $sent = socket_write($socket, json_encode($data) . "\n");
@@ -79,7 +81,7 @@ if (window.parent && window.parent.hasOwnProperty('<?php echo $request->connecti
                     echo sprintf("<p>%s</p>\n", $cmd);?>
 <script>
 if (window.parent && window.parent.hasOwnProperty('<?php echo $request->connectionNode; ?>')) {
-    window.parent.<?php echo $request->connectionNode; ?>.message('<?php echo $cmd; ?>');
+    window.parent.<?php echo $request->connectionNode; ?>.message(<?php echo $json; ?>);
 }
 </script> <?php
 

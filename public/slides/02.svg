@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.1"
+   id="svg2"
+   viewBox="0 0 899.99998 674.99995"
+   height="19.049999cm"
+   width="25.4cm"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="02.svg">
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="747"
+     inkscape:window-height="480"
+     id="namedview4269"
+     showgrid="false"
+     inkscape:zoom="0.34444445"
+     inkscape:cx="449.99999"
+     inkscape:cy="337.49999"
+     inkscape:window-x="1164"
+     inkscape:window-y="349"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg2" />
+  <defs
+     id="defs4" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     transform="translate(0,-377.36221)"
+     id="layer1">
+    <g
+       transform="translate(8.2530792,426.3499)"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:100px;line-height:125%;font-family:Sans;-inkscape-font-specification:'Sans Bold';text-align:center;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       id="flowRoot4136">
+      <path
+         d="m 410.5127,268.98227 q 1.26,-44.28 42.12,-44.28 18.18,0 29.52,10.44 11.34,10.44 11.34,27 0,23.76 -27,38.52 l -18,9.72 q -11.7,6.3 -16.74,12.24 -5.04,5.94 -6.3,14.04 l 67.14,0 0,15.66 -84.96,0 q 1.08,-21.06 8.46,-32.4 7.38,-11.52 27.36,-22.86 l 16.56,-9.36 q 17.28,-9.9 17.28,-25.2 0,-10.26 -7.2,-17.1 -7.2,-6.84 -18,-6.84 -23.94,0 -25.74,30.42 l -15.84,0 z"
+         style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:180px;font-family:FreeSans;-inkscape-font-specification:FreeSans"
+         id="path4812" />
+    </g>
+  </g>
+</svg>

@@ -8,7 +8,7 @@ define(
         'doped/request/Iframe'
     ],
     function(declare, DuplicateConnectionIdError, Deferred, lang, ioQuery, Iframe) {
-        var WATCHDOG_INTERVAL = 1500;
+        var WATCHDOG_INTERVAL = 15000;
         return declare(null, {
             _connections: null,
 
@@ -123,14 +123,18 @@ define(
             },
 
             disconnect: function(/*string*/ connectionId) {
+                var deferred = new Deferred();
+
                 if (this._connections.hasOwnProperty(connectionId)) {
                     this._connections[connectionId].iframe.destroy();
                     clearInterval(this._connections[connectionId].watchdogIntervallId);
 
                     delete this._connections[connectionId];
+
+                    deferred.resolve();
                 }
 
-                return this;
+                return deferred;
             }
         });
     }

@@ -7,9 +7,6 @@ define('INPUT_FILTER', FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
 ob_implicit_flush(true);
 set_time_limit(0);
 
-
-
-
 $request = (object) filter_input_array(
     INPUT_GET,
     array(
@@ -132,12 +129,16 @@ if (window.parent && window.parent.hasOwnProperty('<?php echo $request->connecti
 } else {
     header('Content-Type: application/json');
     $address = '/var/www/sockets/doped.socket';
-    $request->command = 'create';
+
+    if (!$request->command) {
+        $request->command = 'create';
+    }
+
     $socket = socket_create(AF_UNIX, SOCK_STREAM, 0);
 
     if (@socket_connect($socket, $address)) {
 
-        $data = array('command' => 'create',);
+        $data = array('command' => $request->command);
 
         $sent = socket_write($socket, json_encode($data));
 

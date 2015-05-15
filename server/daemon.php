@@ -3,11 +3,38 @@
 define('INPUT_FILTER', FILTER_FLAG_STRIP_LOW | FILTER_FLAG_STRIP_HIGH);
 define('SOCKET_DIR', '/var/www/sockets/');
 define('LOGFILE', '/var/www/sockets/log');
+define('HASH_FILE', '/var/www/sockets/hashes');
 logger('Starting.');
 
 declare(ticks = 1);
 set_time_limit(0);
 ob_implicit_flush();
+
+function addHash($hash) {
+    $hashes = unserialize(file_get_contents(HASH_FILE));
+    $hashes[] = array(
+        'time' => time(),
+        'hash' => $hash,
+    );
+    file_put_contents(HASH_FILE, serialize($hashes));
+}
+
+function getHashes() {
+    return unserialize(file_get_contents(HASH_FILE));
+}
+
+function removeHash($hash) {
+    $hashes = unserialize(file_get_contents(HASH_FILE));
+    foreach ($hashes as $index => $hashData) {
+        if ($hashData['hash'] === $hash) {
+            break;
+        }
+    }
+    if ($index !== false) {
+        array_splice($hashes, $index, 1);
+        file_put_contents(HASH_FILE, serialize($hashes));
+    }
+}
 
 function logger($message) {
     file_put_contents(LOGFILE, sprintf("%d %s\n", time(), $message), FILE_APPEND);
@@ -31,6 +58,7 @@ function sig_handler($sig) {
 
 function startHandler($client, $data) {
     $hash = md5(rand(0, 500));
+    addHash($hash);
     $address = SOCKET_DIR . 'doped-' . $hash . '.socket';
 
     $pid = pcntl_fork();
@@ -94,12 +122,18 @@ function startHandler($client, $data) {
                     $cmd = $data['command'];
                     logger('New controller command: ' . $cmd);
 
-                    foreach ($clients as $clientSocket) {
+                    foreach ($clients as $index => $clientSocket) {
                         logger('Sending message to a client: ' . $cmd);
-                        socket_write($clientSocket, json_encode(array(
+                        $written = @socket_write($clientSocket, json_encode(array(
                             'command' => $cmd,
                         )) . "\n");
-                        logger('Message sent.');
+
+                        if ($written !== false) {
+                            logger('Message sent.');
+                        } else {
+                            array_slice($clients, $index, 1);
+                            logger('Removed one client.');
+                        }
                     }
 
                     logger('All clients informed: ');
@@ -129,6 +163,7 @@ function startHandler($client, $data) {
 
         @socket_close($socket);
         @unlink($address);
+        removeHash($hash);
         exit();
     }
 }
@@ -161,6 +196,17 @@ while (true) {
 
         if ($cmd === 'create') {
             startHandler($client, $data);
+        } else if ($cmd === 'query') {
+            echo "Quering.\n";
+            socket_write(
+                $client,
+                json_encode(array(
+                    'status' => 200,
+                    'hashes' => getHashes(),
+                )) . "\n"
+            );
+
+            socket_close($client);
         } else {
             echo "Unable to fork.\n";
             socket_write(

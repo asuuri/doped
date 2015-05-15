@@ -18,7 +18,7 @@ define(
                     {
                         src: uri,
                         id: this._generateId(),
-                        style: 'display: hidden;'
+                        style: 'visibility: hidden;'
                     }
                 );
 

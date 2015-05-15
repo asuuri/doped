@@ -22,7 +22,7 @@ if ($request->connectionId) {
     $address = '/var/www/sockets/doped-' . $request->connectionId . '.socket';
 
     if ($request->mode === MODE_CONTROLLER) {
-        //header('Content-Type: application/json');
+        header('Content-Type: application/json');
         $socket = socket_create(AF_UNIX, SOCK_STREAM, 0);
 
         if (@socket_connect($socket, $address)) {
@@ -43,18 +43,15 @@ if ($request->connectionId) {
         socket_close($socket);
         exit();
     } else if ($request->mode === MODE_CLIENT) {
-        echo 'Creating...';
         $socket = socket_create(AF_UNIX, SOCK_STREAM, 0);
 
         if ($socket === false) {
             throw new Exception('Unable to create the socket.');
         }
 
-        $socket = socket_create(AF_UNIX, SOCK_STREAM, 0);
         echo 'Connecting...';
-        ob_flush();
-        flush();
         if (@socket_connect($socket, $address)) {
+            socket_set_option($socket, SOL_SOCKET, SO_RCVTIMEO, array('sec' => 0, 'usec' => 1000));
             $sent = socket_write($socket, json_encode(array('command' => '')) . "\n");
 
             $quit = false;

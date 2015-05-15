@@ -96,7 +96,7 @@ function startHandler($client, $data) {
         logger('Forked to a pid: ' . posix_getpid());
 
         $socket = socket_create(AF_UNIX, SOCK_STREAM, 0);
-        socket_set_option($socket, SOL_SOCKET, SO_REUSEADDR, 1);
+        //socket_set_option($socket, SOL_SOCKET, SO_REUSEADDR, 1);
 
         if ($socket === false) {
             throw new Exception('Unable to create the socket.');
@@ -177,7 +177,7 @@ pcntl_signal(SIGCHLD, 'sig_handler');
 
 @unlink(SOCKET_DIR . 'doped.socket');
 $socket = socket_create(AF_UNIX, SOCK_STREAM, 0);
-socket_set_option($socket, SOL_SOCKET, SO_REUSEADDR, 1);
+//socket_set_option($socket, SOL_SOCKET, SO_REUSEADDR, 1);
 
 if ($socket === false) {
     throw new Exception('Unable to create the socket.');

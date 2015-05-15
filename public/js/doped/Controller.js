@@ -17,14 +17,29 @@ define(
             templateString: template,
 
             postCreate: function() {
+                request('../slides/', { handleAs: 'json' }).then(
+                    lang.hitch(this, function(data) {
+                        if (data['total']) {
+                            this.total = data.total;
+                            html.set(this.totalSlidesNode, '' + this.total);
+                            this._showControls();
+                        }
+                    })
+                );
                 console.log('Controller created');
             },
 
             _connectionId: '',
 
+            _total: 0,
+
             _slide: 0,
 
-            _create: function() {
+            _showControls: function() {
+                domClass.add(this.domNode, 'active');
+            },
+
+            _toggleStatus: function() {
                 if (!domClass.contains(this.createBtnNode, 'create')) {
                     attr.set(this.createBtnNode, 'disabled', 'disabled');
                     request(
@@ -37,7 +52,6 @@ define(
                                 attr.remove(this.createBtnNode, 'disabled');
                                 domClass.replace(this.createBtnNode, 'create', 'stop');
                                 html.set(this.createBtnNode, 'end');
-                                attr.remove(this.prevBtnNode, 'disabled');
                                 attr.remove(this.nextBtnNode, 'disabled');
                                 style.set(this.linkNode, 'visibility', 'visible');
                                 attr.set(this.linkNode, 'href', '/#' + this._connectionId);
@@ -74,6 +88,8 @@ define(
                                 attr.set(this.prevBtnNode, 'disabled', 'disabled');
                                 attr.set(this.nextBtnNode, 'disabled', 'disabled');
                                 style.set(this.linkNode, 'visibility', 'hidden');
+                                html.set(this.watchersCountNode, '0');
+                                this._slide = 0;
                             } else {
                                 if (data['message']) {
                                     alert(data['message']);
@@ -87,8 +103,18 @@ define(
                     );
                 }
             },
+
             _update: function() {
                 var slide = this._slide;
+
+                if (slide === 0) {
+                    attr.set(this.prevBtnNode, 'disabled', 'disabled');
+                } else if (slide === this.total){
+                    attr.set(this.nextBtnNode, 'disabled', 'disabled');
+                } else {
+                    attr.remove(this.prevBtnNode, 'disabled');
+                    attr.remove(this.nextBtnNode, 'disabled');
+                }
                 request(
                     '../comlink',
                     {
@@ -103,6 +129,8 @@ define(
                     }
                 ).then(
                     lang.hitch(this, function(data) {
+                        html.set(this.watchersCountNode, '' + data.totalClients);
+                        html.set(this.currentSlideNode, '' + slide);
                         console.log(data);
                     }),
                     lang.hitch(this, function(data) {

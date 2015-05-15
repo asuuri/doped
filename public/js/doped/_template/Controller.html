@@ -1,9 +1,11 @@
 <div>
     <h1>Controller</h1>
-    <p>
+    <div>
+        <h3>Watchers: <span data-dojo-attach-point="watchersCountNode">0</span></h3>
+        <h2><span data-dojo-attach-point="currentSlideNode">0</span>/<span data-dojo-attach-point="totalSlidesNode">0</span></h2>
         <p><a style="visibility: hidden;" data-dojo-attach-point="linkNode" href="/#" target="_blank">presentation</a></p>
-        <button data-dojo-attach-event="onclick: _create" data-dojo-attach-point="createBtnNode">Start</button>
-    </p>
+    </div>
     <button disabled="disabled" data-dojo-attach-event="onclick: _prev" data-dojo-attach-point="prevBtnNode">Prev</button>
+    <button data-dojo-attach-event="onclick: _toggleStatus" data-dojo-attach-point="createBtnNode">Start</button>
     <button disabled="disabled" data-dojo-attach-event="onclick: _next" data-dojo-attach-point="nextBtnNode">Next</button>
 </div>

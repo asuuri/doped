@@ -102,7 +102,6 @@ function startHandler($client, $data) {
             throw new Exception('Unable to create the socket.');
         }
 
-        $startTime = time();
         socket_bind($socket, $address);
         socket_listen($socket);
         socket_set_nonblock($socket);
@@ -127,7 +126,7 @@ function startHandler($client, $data) {
                         logger('Sending message to a client: ' . $cmd);
                         $written = @socket_write($clientSocket, json_encode(array(
                             'command' => $cmd,
-                            'slide' => isset($data['slide'])?$data['slide']:null,
+                            'slideNumber' => isset($data['slideNumber'])?$data['slideNumber']:null,
                         )) . "\n");
 
                         if ($written !== false) {

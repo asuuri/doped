@@ -3,7 +3,7 @@ define(
         'dojo/_base/declare',
         'dijit/_Widget',
         'dijit/_TemplatedMixin',
-        'dojo/text!doped/_template/Presentation.html',
+        'dojo/text!doped/page/_template/Presentation.html',
         'dojo/dom-style',
         'dojo/dom-construct',
         'dojo/html',
@@ -14,14 +14,12 @@ define(
         'doped/ComLink'
     ],
     function(declare, Widget, TemplatedMixin, template, style, domConstruct, html, hash, request, lang, array, ComLink) {
-        return declare('doped/Controller', [Widget, TemplatedMixin], {
+        return declare('doped/page/Presentation', [Widget, TemplatedMixin], {
             templateString: template,
 
             _connectionId: '',
 
             _comlink: null,
-
-            _counter: 0,
 
             postCreate: function() {
                 if(hash()) {
@@ -68,8 +66,7 @@ define(
                 console.log(data);
                 switch(data['command']) {
                     case 'update':
-                        this._counter--;
-                        html.set(this.counterNode, '' + data['slide']);
+                        html.set(this.counterNode, '' + data['slideNumber']);
                         break;
                     case 'quit':
                         this._comlink.disconnect(this._connectionId).then(lang.hitch(this, '_presentationEnded'));

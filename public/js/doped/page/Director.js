@@ -3,7 +3,7 @@ define(
         'dojo/_base/declare',
         'dijit/_Widget',
         'dijit/_TemplatedMixin',
-        'dojo/text!doped/_template/Controller.html',
+        'dojo/text!doped/page/_template/Director.html',
         'dojo/dom-class',
         'dojo/dom-attr',
         'dojo/dom-style',
@@ -13,7 +13,7 @@ define(
         'doped/ComLink'
     ],
     function(declare, Widget, TemplatedMixin, template, domClass, attr, style, html, lang, request) {
-        return declare('doped/Controller', [Widget, TemplatedMixin], {
+        return declare('doped/page/Director', [Widget, TemplatedMixin], {
             templateString: template,
 
             postCreate: function() {
@@ -26,14 +26,14 @@ define(
                         }
                     })
                 );
-                console.log('Controller created');
+                console.log('Director created');
             },
 
             _connectionId: '',
 
             _total: 0,
 
-            _slide: 0,
+            _slideNumber: 0,
 
             _showControls: function() {
                 domClass.add(this.domNode, 'active');
@@ -89,7 +89,7 @@ define(
                                 attr.set(this.nextBtnNode, 'disabled', 'disabled');
                                 style.set(this.linkNode, 'visibility', 'hidden');
                                 html.set(this.watchersCountNode, '0');
-                                this._slide = 0;
+                                this._slideNumber = 0;
                             } else {
                                 if (data['message']) {
                                     alert(data['message']);
@@ -105,11 +105,11 @@ define(
             },
 
             _update: function() {
-                var slide = this._slide;
+                var slideNumber = this._slideNumber;
 
-                if (slide === 0) {
+                if (slideNumber === 0) {
                     attr.set(this.prevBtnNode, 'disabled', 'disabled');
-                } else if (slide === this.total){
+                } else if (slideNumber === this.total){
                     attr.set(this.nextBtnNode, 'disabled', 'disabled');
                 } else {
                     attr.remove(this.prevBtnNode, 'disabled');
@@ -122,7 +122,7 @@ define(
                         preventCache: true,
                         query: {
                             command: 'update',
-                            slide: slide,
+                            slideNumber: slideNumber,
                             mode: 'controller',
                             connectionId: this._connectionId
                         }
@@ -130,7 +130,7 @@ define(
                 ).then(
                     lang.hitch(this, function(data) {
                         html.set(this.watchersCountNode, '' + data.totalClients);
-                        html.set(this.currentSlideNode, '' + slide);
+                        html.set(this.currentSlideNode, '' + slideNumber);
                         console.log(data);
                     }),
                     lang.hitch(this, function(data) {
@@ -138,12 +138,14 @@ define(
                     })
                 );
             },
+
             _prev: function() {
-                this._slide--;
+                this._slideNumber--;
                 this._update();
             },
+
             _next: function() {
-                this._slide++;
+                this._slideNumber++;
                 this._update();
             }
         });

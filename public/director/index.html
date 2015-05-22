@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta charset="UTF-8">
-        <title>Controller</title>
+        <title>Presentation director</title>
         <script>
             dojoConfig= {
                 async: true
@@ -11,7 +11,7 @@
         <script type="text/javascript" src="../js/dojo/dojo.js"></script>
         <script>
             require(
-                ['dojo/parser', 'dojo/domReady!'], 
+                ['dojo/parser', 'dojo/domReady!'],
                 function(parser) {
                     parser.parse();
                 }
@@ -19,6 +19,6 @@
         </script>
     </head>
     <body>
-        <div data-dojo-type="doped/Controller"></div>
+        <div data-dojo-type="doped/page/Director"></div>
     </body>
 </html>

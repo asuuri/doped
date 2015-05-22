@@ -12,7 +12,7 @@ $request = (object) filter_input_array(
     array(
         'connectionId' => INPUT_FILTER,
         'connectionNode' => INPUT_FILTER,
-        'slide' => INPUT_FILTER,
+        'slideNumber' => INPUT_FILTER,
         'mode' => INPUT_FILTER,
         'command' => INPUT_FILTER,
     ),
@@ -29,7 +29,7 @@ if ($request->connectionId) {
         if (@socket_connect($socket, $address)) {
             $data = array(
                 'command' => $request->command,
-                'slide' => $request->slide,
+                'slideNumber' => $request->slideNumber,
             );
 
             $sent = socket_write($socket, json_encode($data) . "\n");

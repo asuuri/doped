@@ -204,6 +204,7 @@
                             var comLink = new ComLink(baseUrl + '?ttl=6&mode=tx&watchdogTimeout=1');
 
                             var connection = comLink.connect(id, function(data) {
+                                console.log('data', data);
                                 if (data === 'passed') {
                                     comLink.disconnect('abcde_5');
                                     request(baseUrl + '?mode=rx&cmd=quit&connectionId=' + id).then(function() {
@@ -215,6 +216,7 @@
                             connection.then(function() {
                                 request(baseUrl + '?mode=rx&cmd=quit&connectionId=' + id).then(function() {
                                     setTimeout(function() {
+                                        console.log('got here');
                                         request(baseUrl + '?mode=rx&cmd=passed&connectionId=' + id);
                                     }, 4000);
                                 });

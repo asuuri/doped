@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+<html>
+	<head>
+		<title>Testing doped/ComLink</title>
+		<style type="text/css">
+			@import "../../dojo/resources/dojo.css";
+            @import "../../../css/main.css";
+		</style>
+		<script>
+			var dojoConfig = {
+				async: true
+			};
+		</script>
+		<script type="text/javascript" src="../../dojo/dojo.js"></script>
+		<script type="text/javascript">
+			require([
+                'doh',
+                'doped/SlideDisplay',
+                'dijit/registry',
+                'dojo/dom-construct',
+                'dojo/domReady!'
+            ], function(doh, SlideDisplay, registry, domConstruct){
+                function cleanWorkspace() {
+                    var display = registry.byId('one');
+
+                    if (display) {
+                        display.destroy(false);
+                    }
+
+                    domConstruct.create('div', { id: 'slides_1' }, document.body);
+                }
+				doh.register('doped/SlideDisplay', [
+                    {
+                        name: 'Test constructor',
+                        setUp: cleanWorkspace,
+                        runTest: function() {
+                            var baseUrl = window.location.href.replace('SlideDisplay.html', '');
+                            var display = new SlideDisplay({id: 'one', uri: baseUrl + '_testSlides/'});
+
+                            display.placeAt('slides_1');
+                        }
+                    },
+
+                    {
+                        name: 'Test next',
+                        setUp: cleanWorkspace,
+                        runTest: function() {
+                            var baseUrl = window.location.href.replace('SlideDisplay.html', '');
+                            var display = new SlideDisplay({
+                                uri: baseUrl + '_testSlides/',
+                                ready: function() {
+                                    display.next();
+                                }
+                            });
+
+                            display.placeAt('slides_1');
+                        }
+                    },
+
+                    {
+                        name: 'Test go to and previous',
+                        setUp: cleanWorkspace,
+                        runTest: function() {
+                            var baseUrl = window.location.href.replace('SlideDisplay.html', '');
+                            var display = new SlideDisplay({
+                                uri: baseUrl + '_testSlides/',
+                                ready: function() {
+                                    display.goto(5, function() {
+                                        display.previous();
+                                    });
+                                }
+                            });
+
+                            display.placeAt('slides_1');
+                        }
+                    }
+				]);
+				doh.run();
+			});
+
+		</script>
+	</head>
+	<body>
+            <div>doped/SlideDisplay</div>
+	</body>
+</html>

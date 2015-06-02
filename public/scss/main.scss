@@ -1,4 +1,30 @@
+$animationTime: 500ms;
+
 html, body {
     margin: 0;
     padding: 0;
+}
+
+.slideDisplay {
+    overflow: hidden;
+
+    .slideContent {
+        position: absolute;
+        -webkit-transition: margin $animationTime ease;
+        -moz-transition: margin $animationTime ease;
+        -o-transition: margin $animationTime ease;
+        transition: margin $animationTime ease;
+
+        svg {
+            background-color: white;
+        }
+
+        &.next {
+            margin-left: 100%;
+        }
+
+        &.previous {
+            margin-left: -100%;
+        }
+    }
 }

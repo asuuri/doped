@@ -3,7 +3,10 @@ define(
         'dojo/_base/declare',
         'dijit/_Widget',
         'dijit/_TemplatedMixin',
+        'dijit/_WidgetsInTemplateMixin',
         'dojo/text!doped/page/_template/Presentation.html',
+        'dojo/on',
+        'dojo/keys',
         'dojo/dom-style',
         'dojo/dom-construct',
         'dojo/html',
@@ -11,15 +14,34 @@ define(
         'dojo/request',
         'dojo/_base/lang',
         'dojo/_base/array',
-        'doped/ComLink'
+        'doped/ComLink',
+        'doped/SlideDisplay'
     ],
-    function(declare, Widget, TemplatedMixin, template, style, domConstruct, html, hash, request, lang, array, ComLink) {
-        return declare('doped/page/Presentation', [Widget, TemplatedMixin], {
+    function(
+        declare,
+        Widget,
+        TemplatedMixin,
+        WidgetsInTemplateMixin,
+        template,
+        on,
+        keys,
+        style,
+        domConstruct,
+        html,
+        hash,
+        request,
+        lang,
+        array,
+        ComLink
+    ) {
+        return declare('doped/page/Presentation', [Widget, TemplatedMixin, WidgetsInTemplateMixin], {
             templateString: template,
 
             _connectionId: '',
 
             _comlink: null,
+
+            slidesUri: '',
 
             postCreate: function() {
                 if(hash()) {
@@ -31,10 +53,22 @@ define(
                 } else {
                     request('comlink?command=query', { handleAs: 'json'}).then(lang.hitch(this, '_listOngoing'));
                 }
+
+                on(window, 'keydown', lang.hitch(this, '_handleKeyPress'));
+            },
+
+            _handleKeyPress: function(evt) {
+                switch(evt.keyCode){
+                    case keys.RIGHT_ARROW:
+                        this.slideDisplay.next();
+                        break;
+                    case keys.LEFT_ARROW:
+                        this.slideDisplay.previous();
+                        break;
+                }
             },
 
             _listOngoing: function(data) {
-
                 if (data['hashes']) {
                     array.forEach(
                         data.hashes,
@@ -53,20 +87,23 @@ define(
             },
 
             _connectionReady: function() {
-                style.set(this.counterNode, 'visibility', 'visible');
-                console.log('Connection ready', this.counterNode);
+
             },
 
             _presentationEnded: function() {
-                style.set(this.counterNode, 'visibility', 'hidden');
-                console.log('Presentation ended');
+
             },
 
             _handleCommand: function(data) {
-                console.log(data);
                 switch(data['command']) {
-                    case 'update':
-                        html.set(this.counterNode, '' + data['slideNumber']);
+                    case 'prev':
+                        this.slideDisplay.previous();
+                        break;
+                    case 'goto':
+                        this.slideDisplay.goto(data.slideNumber);
+                        break;
+                    case 'next':
+                        this.slideDisplay.next();
                         break;
                     case 'quit':
                         this._comlink.disconnect(this._connectionId).then(lang.hitch(this, '_presentationEnded'));

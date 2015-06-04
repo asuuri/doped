@@ -3,12 +3,13 @@
     <head>
         <meta charset="UTF-8">
         <title>Presentation</title>
+        <link rel="stylesheet" href="css/main.css">
         <script>
             dojoConfig= {
                 async: true
             };
         </script>
-        <script type="text/javascript" src="../js/dojo/dojo.js"></script>
+        <script type="text/javascript" src="js/dojo/dojo.js"></script>
         <script>
             require(
                 ['dojo/parser', 'dojo/domReady!'],
@@ -19,6 +20,6 @@
         </script>
     </head>
     <body>
-        <div data-dojo-type="doped/page/Presentation"></div>
+        <div data-dojo-type="doped/page/Presentation" data-dojo-props="slidesUri:'slides/'"></div>
     </body>
 </html>

@@ -20,13 +20,12 @@ define(
                 request('../slides/', { handleAs: 'json' }).then(
                     lang.hitch(this, function(data) {
                         if (data['total']) {
-                            this.total = data.total;
-                            html.set(this.totalSlidesNode, '' + this.total);
+                            this._total = data.total;
+                            html.set(this.totalSlidesNode, '' + this._total);
                             this._showControls();
                         }
                     })
                 );
-                console.log('Director created');
             },
 
             _connectionId: '',
@@ -121,7 +120,7 @@ define(
                         handleAs: 'json',
                         preventCache: true,
                         query: {
-                            command: 'update',
+                            command: 'goto',
                             slideNumber: slideNumber,
                             mode: 'controller',
                             connectionId: this._connectionId
@@ -140,13 +139,17 @@ define(
             },
 
             _prev: function() {
-                this._slideNumber--;
-                this._update();
+                if (this._slideNumber > 0) {
+                    this._slideNumber--;
+                    this._update();
+                }
             },
 
             _next: function() {
-                this._slideNumber++;
-                this._update();
+                if (this._slideNumber < this._total) {
+                    this._slideNumber++;
+                    this._update();
+                }
             }
         });
     }

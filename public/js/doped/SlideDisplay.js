@@ -21,8 +21,6 @@ define(
 
             ready: function() {},
 
-            timeoutHandler: null,
-
             postCreate: function() {
                 if (this.uri) {
                     request(this.uri, {handleAs: 'json'}).then(
@@ -49,35 +47,21 @@ define(
             },
 
             renderSlide: function(svgNode, side /*-1 0 1*/, ready) {
-                var containerNode, incomingClass, outgoingClass;
-                if (side === 0) {
-                    domConstruct.place(svgNode, this.slideContainerNode, 'only');
-                } else {
-                    incomingClass = (side === 1)?'next':'previous';
-                    outgoingClass = (side === 1)?'previous':'next';
-
-                    containerNode = domConstruct.create('div', { 'class': 'slideContent ' + incomingClass }, this.domNode);
-                    domConstruct.place(svgNode, containerNode, 'only');
-
-                    domClass.replace(containerNode, 'current', incomingClass);
-                    domClass.replace(this.slideContainerNode, outgoingClass, 'current');
-
-                    clearTimeout(this.timeoutHandler);
-                    setTimeout(lang.hitch(this, function() {
-                        domConstruct.destroy(this.slideContainerNode);
-                        this.slideContainerNode = containerNode;
-                    }), 600);
-                }
+                domConstruct.place(svgNode, this.slideContainerNode, 'only');
 
                 if (typeof ready === 'function') {
                     ready();
                 }
+
+                return this;
             },
 
             next: function(ready) {
                 var nextSlide = this.currentIndex + 1;
 
                 this._toSlide(nextSlide, 1, ready);
+
+                return this;
             },
 
             goto: function(index, ready) {
@@ -87,12 +71,16 @@ define(
                     sideMovement = (this.currentIndex < index)? 1 : -1;
                     this._toSlide(index, sideMovement, ready);
                 }
+
+                return this;
             },
 
             previous: function(ready) {
                 var nextSlide = this.currentIndex - 1;
 
-                this._toSlide(nextSlide, -1, ready)
+                this._toSlide(nextSlide, -1, ready);
+
+                return this;
             }
         });
     }

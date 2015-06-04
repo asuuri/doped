@@ -2,6 +2,10 @@ html, body {
   margin: 0;
   padding: 0; }
 
+ul {
+  position: absolute;
+  list-style: none; }
+
 .slideDisplay {
   overflow: hidden; }
   .slideDisplay .slideContent {
@@ -9,8 +13,10 @@ html, body {
     -webkit-transition: margin 500ms ease;
     -moz-transition: margin 500ms ease;
     -o-transition: margin 500ms ease;
-    transition: margin 500ms ease; }
+    transition: margin 500ms ease;
+    width: 100%; }
     .slideDisplay .slideContent svg {
+      height: 100%;
       background-color: white; }
     .slideDisplay .slideContent.next {
       margin-left: 100%; }

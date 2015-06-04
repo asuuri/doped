@@ -5,6 +5,11 @@ html, body {
     padding: 0;
 }
 
+ul {
+    position: absolute;
+    list-style: none;
+}
+
 .slideDisplay {
     overflow: hidden;
 
@@ -15,7 +20,10 @@ html, body {
         -o-transition: margin $animationTime ease;
         transition: margin $animationTime ease;
 
+        width: 100%;
+
         svg {
+            height: 100%;
             background-color: white;
         }
 

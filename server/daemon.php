@@ -190,7 +190,7 @@ socket_set_nonblock($socket);
 $cmd = '';
 
 while (true) {
-    if (($client = socket_accept($socket)) !== false) {
+    if (($client = @socket_accept($socket)) !== false) {
         $json = socket_read($client, 100);
 
         $data = json_decode($json, true);

@@ -10,6 +10,13 @@ ul {
     list-style: none;
 }
 
+button {
+    display: block;
+    height: 50px;
+    width: 50px;
+    float: left;
+}
+
 .slideDisplay {
     overflow: hidden;
 

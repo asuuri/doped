@@ -111,7 +111,7 @@ function startHandler($client, $data) {
         $clients = array();
 
         while ($quit === false) {
-            if (($client = socket_accept($socket)) !== false) {
+            if (($client = @socket_accept($socket)) !== false) {
                 logger('New incomming connection');
                 socket_set_nonblock($client);
                 $json = socket_read($client, 100, PHP_NORMAL_READ);

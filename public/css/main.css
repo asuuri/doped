@@ -6,6 +6,15 @@ ul {
   position: absolute;
   list-style: none; }
 
+button {
+  display: block;
+  height: 80px;
+  width: 33.3%;
+  float: left;
+  font-size: 30px;
+  font-weight: bold;
+}
+
 .slideDisplay {
   overflow: hidden; }
   .slideDisplay .slideContent {

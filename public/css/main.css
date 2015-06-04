@@ -1,0 +1,20 @@
+html, body {
+  margin: 0;
+  padding: 0; }
+
+.slideDisplay {
+  overflow: hidden; }
+  .slideDisplay .slideContent {
+    position: absolute;
+    -webkit-transition: margin 500ms ease;
+    -moz-transition: margin 500ms ease;
+    -o-transition: margin 500ms ease;
+    transition: margin 500ms ease; }
+    .slideDisplay .slideContent svg {
+      background-color: white; }
+    .slideDisplay .slideContent.next {
+      margin-left: 100%; }
+    .slideDisplay .slideContent.previous {
+      margin-left: -100%; }
+
+/*# sourceMappingURL=main.css.map */

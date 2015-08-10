@@ -74,12 +74,15 @@ define(
                         data.hashes,
                         function(hashObj) {
                             var li = domConstruct.create('li', {}, this.ongoingListNode);
-                            domConstruct.create(
+                            var link = domConstruct.create(
                                 'a',
                                 { href: '#' + hashObj.hash, innerHTML:  hashObj.hash},
                                 li
                             );
-                            console.log(hashObj);
+
+                            on(link, 'click', function() {
+                                location.reload();
+                            });
                         },
                         this
                     );
